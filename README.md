@@ -17,7 +17,7 @@ repo contains a current (July 2020) example of how to configure the `app.yaml` t
 
 2. Create a `.env` (dotenv) file:
 ```bash
-cat >> .env << EOF
+cat > .env << EOF
 export APP_NAME="app-engine-react-demo"
 export PROJECT_ID="<YOUR GCP PROJECT ID>"
 EOF
