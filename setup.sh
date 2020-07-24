@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 
-source .env
+source .env # includes app name and project id
+
+# set project
+gcloud config set project $PROJECT_ID
 
 # enable GCP apis
 gcloud services enable appengine.googleapis.com
-
-export APP_NAME="app-engine-react-demo"
-export PROJECT_ID="mike-stage"
-export GCP_REGION="us-central1"
-export GCP_ZONE="us-central1-b"
 
 # bootstrap app using create-react-app
 npx create-react-app $APP_NAME

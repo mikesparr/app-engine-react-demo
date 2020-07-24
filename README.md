@@ -1,68 +1,65 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Deploy a React app to Google App Engine in 5 minutes
+Sometimes finding a working example for what is supposed to be a simple task is a challenge. This 
+repo contains a current (July 2020) example of how to configure the `app.yaml` to deploy a 
+`create-react-app` default build to Google's App Engine standard.
 
-## Available Scripts
+# Prerequisites
+ * NodeJS
+ * Google Cloud SDK (`gcloud` CLI)
+ * Active Google Cloud Platform (GCP) project
 
-In the project directory, you can run:
+# Example
+![App Engine React Demo](app-engine-demo-01.png)
 
-### `npm start`
+# Usage
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+1. Download the `setup.sh`, `teardown.sh`, and `app.yaml` files to your computer
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+2. Create a `.env` (dotenv) file:
+```bash
+cat >> .env << EOF
+export APP_NAME="app-engine-react-demo"
+export PROJECT_ID="<YOUR GCP PROJECT ID>"
+EOF
+```
 
-### `npm test`
+3. Run the setup script
+```bash
+./setup.sh
+```
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+4. Wait several minutes and then view the app in your browser
 
-### `npm run build`
+# App Engine Config
+The tricky part is getting the app config working. There are some examples for App Engine (flex) and differing approaches for flex and standard, but this is a concise working example that will deploy the artifacts from the `/build` folder after running `npm build`.
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```yaml
+# app.yaml
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+env: standard
+runtime: nodejs10
+service: app-engine-react-demo
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+handlers:
+  - url: /static
+    static_dir: build/static
 
-### `npm run eject`
+  - url: /(.*\.(json|ico|js))$
+    static_files: build/\1
+    upload: build/.*\.(json|ico|js)$
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+  - url: .*
+    static_files: build/index.html
+    upload: build/index.html
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# Cleanup
+To avoid unexpected charges be sure to either delete your project or delete the app you deployed 
+using the provided `cleanup.sh` script. 
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```bash
+./cleanup.sh
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+If you deploy multiple times, you might have to first delete 
+versions using `gcloud app versions list` and then `gcloud app versions delete <version id>`.
