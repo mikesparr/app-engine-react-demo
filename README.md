@@ -55,10 +55,10 @@ handlers:
 
 # Cleanup
 To avoid unexpected charges be sure to either delete your project or delete the app you deployed 
-using the provided `cleanup.sh` script. 
+using the provided `teardown.sh` script. 
 
 ```bash
-./cleanup.sh
+./teardown.sh
 ```
 
 If you deploy multiple times, you might have to first delete 
